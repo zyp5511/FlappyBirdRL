@@ -30,7 +30,7 @@ def get_args():
     parser.add_argument("--replay_memory_size", type=int, default=50000,
                         help="Number of epoches between testing phases")
     parser.add_argument("--log_path", type=str, default="tensorboard")
-    parser.add_argument("--saved_path", type=str, default="trained_models")
+    parser.add_argument("--saved_path", type=str, default="trained_models_new")
 
     args = parser.parse_args()
     return args
@@ -71,7 +71,7 @@ def train(opt):
             action = randint(0, 1)
         else:
 
-            action = torch.argmax(prediction)[0]
+            action = torch.argmax(prediction).item()
 
         next_image, reward, terminal = game_state.next_frame(action)
         next_image = pre_processing(next_image[:game_state.screen_width, :int(game_state.base_y)], opt.image_size,
