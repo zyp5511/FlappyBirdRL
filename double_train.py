@@ -29,8 +29,8 @@ def get_args():
     parser.add_argument("--num_iters", type=int, default=2000000)
     parser.add_argument("--replay_memory_size", type=int, default=50000,
                         help="Number of epoches between testing phases")
-    parser.add_argument("--log_path", type=str, default="tensorboard")
-    parser.add_argument("--saved_path", type=str, default="trained_models_new")
+    parser.add_argument("--log_path", type=str, default="tensorboard/double_train")
+    parser.add_argument("--saved_path", type=str, default="trained_models/double_train")
     parser.add_argument("--target_update_freq", type=int, default=200, help="The number of steps between target network's updates")
 
     args = parser.parse_args()
@@ -136,4 +136,8 @@ def train(opt):
 
 if __name__ == "__main__":
     opt = get_args()
+    if os.path.exists(opt.saved_path):
+        os.mkdir(opt.saved_path)
+    if os.path.exists(opt.log_path):
+        os.mkdir(opt.log_path)
     train(opt)

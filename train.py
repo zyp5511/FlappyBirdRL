@@ -29,8 +29,8 @@ def get_args():
     parser.add_argument("--num_iters", type=int, default=2000000)
     parser.add_argument("--replay_memory_size", type=int, default=50000,
                         help="Number of epoches between testing phases")
-    parser.add_argument("--log_path", type=str, default="tensorboard")
-    parser.add_argument("--saved_path", type=str, default="trained_models_new")
+    parser.add_argument("--log_path", type=str, default="tensorboard/baseline")
+    parser.add_argument("--saved_path", type=str, default="trained_models/baseline")
 
     args = parser.parse_args()
     return args

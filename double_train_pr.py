@@ -30,8 +30,8 @@ def get_args():
     parser.add_argument("--num_iters", type=int, default=2000000)
     parser.add_argument("--replay_memory_size", type=int, default=50000,
                         help="Number of epoches between testing phases")
-    parser.add_argument("--log_path", type=str, default="tensorboard")
-    parser.add_argument("--saved_path", type=str, default="trained_models_new")
+    parser.add_argument("--log_path", type=str, default="tensorboard/double_train_pr")
+    parser.add_argument("--saved_path", type=str, default="trained_models/double_train_pr")
     parser.add_argument("--target_update_freq", type=int, default=200, help="The number of steps between target network's updates")
     parser.add_argument("--alpha", type=float, default=1, help="alpha in replay")
     parser.add_argument("--beta", type=float, default=1, help="beta in replay")
