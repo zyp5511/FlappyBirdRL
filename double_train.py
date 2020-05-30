@@ -4,7 +4,7 @@
 import argparse
 import os
 import shutil
-from random import random, randint, sample
+from random import random, randint, sample, seed
 
 import numpy as np
 import torch
@@ -15,6 +15,9 @@ from src.deep_q_network import DeepQNetwork
 from src.flappy_bird import FlappyBird
 from src.utils import pre_processing
 
+seed(123)
+np.random.seed(123)
+torch.backends.cudnn.deterministic = True
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -29,8 +32,8 @@ def get_args():
     parser.add_argument("--num_iters", type=int, default=2000000)
     parser.add_argument("--replay_memory_size", type=int, default=50000,
                         help="Number of epoches between testing phases")
-    parser.add_argument("--log_path", type=str, default="tensorboard/double_train")
-    parser.add_argument("--saved_path", type=str, default="trained_models/double_train")
+    parser.add_argument("--log_path", type=str, default="tensorboard/double_train_test")
+    parser.add_argument("--saved_path", type=str, default="trained_models/double_train_test")
     parser.add_argument("--target_update_freq", type=int, default=200, help="The number of steps between target network's updates")
 
     args = parser.parse_args()
@@ -51,7 +54,7 @@ def train(opt):
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-6)
     criterion = nn.MSELoss()
     game_state = FlappyBird()
-    image, reward, terminal = game_state.next_frame(0)
+    image, reward, terminal, score  = game_state.next_frame(0)
     image = pre_processing(image[:game_state.screen_width, :int(game_state.base_y)], opt.image_size, opt.image_size)
     image = torch.from_numpy(image)
     if torch.cuda.is_available():
@@ -70,12 +73,12 @@ def train(opt):
         u = random()
         random_action = u <= epsilon
         if random_action:
-            print("Perform a random action")
+            #print("Perform a random action")
             action = randint(0, 1)
         else:
             action = torch.argmax(prediction).item()
 
-        next_image, reward, terminal = game_state.next_frame(action)
+        next_image, reward, terminal, score = game_state.next_frame(action)
         next_image = pre_processing(next_image[:game_state.screen_width, :int(game_state.base_y)], opt.image_size,
                                     opt.image_size)
         next_image = torch.from_numpy(next_image)
@@ -119,16 +122,18 @@ def train(opt):
             model_target.load_state_dict(model.state_dict())
 
         iter += 1
-        print("Iteration: {}/{}, Action: {}, Loss: {}, Epsilon {}, Reward: {}, Q-value: {}".format(
-            iter + 1,
-            opt.num_iters,
-            action,
-            loss,
-            epsilon, reward, torch.max(prediction)))
+        if iter % 100 == 0:
+            print("Test::Double Q: Iteration: {}/{}, Action: {}, Loss: {}, Epsilon {}, Reward: {}, Q-value: {}".format(
+                iter + 1,
+                opt.num_iters,
+                action,
+                loss,
+                epsilon, reward, torch.max(prediction)))
         writer.add_scalar('Train/Loss', loss, iter)
         writer.add_scalar('Train/Epsilon', epsilon, iter)
         writer.add_scalar('Train/Reward', reward, iter)
         writer.add_scalar('Train/Q-value', torch.max(prediction), iter)
+        writer.add_scalar('Train/score', score, iter)
         if (iter+1) % 1000000 == 0:
             torch.save(model, "{}/flappy_bird_{}".format(opt.saved_path, iter+1))
     torch.save(model, "{}/flappy_bird".format(opt.saved_path))
@@ -136,8 +141,8 @@ def train(opt):
 
 if __name__ == "__main__":
     opt = get_args()
-    if os.path.exists(opt.saved_path):
+    if not os.path.exists(opt.saved_path):
         os.mkdir(opt.saved_path)
-    if os.path.exists(opt.log_path):
+    if not os.path.exists(opt.log_path):
         os.mkdir(opt.log_path)
     train(opt)

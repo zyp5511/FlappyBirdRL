@@ -9,7 +9,9 @@ from pygame.image import load
 from pygame.surfarray import array3d, pixels_alpha
 from pygame.transform import rotate
 import numpy as np
-
+from random import random, randint, sample, seed
+seed(123)
+np.random.seed(123)
 
 class FlappyBird(object):
     init()
@@ -69,7 +71,8 @@ class FlappyBird(object):
 
     def generate_pipe(self):
         x = self.screen_width + 10
-        gap_y = randint(2, 10) * 10 + int(self.base_y / 5)
+        #gap_y = randint(2, 10) * 10 + int(self.base_y / 5)
+        gap_y = 6 * 10 + int(self.base_y / 5)
         return {"x_upper": x, "y_upper": gap_y - self.pipe_height, "x_lower": x, "y_lower": gap_y + self.pipe_gap_size}
 
     def is_collided(self):
@@ -153,4 +156,4 @@ class FlappyBird(object):
         image = array3d(display.get_surface())
         display.update()
         self.fps_clock.tick(self.fps)
-        return image, reward, terminal
+        return image, reward, terminal, self.score

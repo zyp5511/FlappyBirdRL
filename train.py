@@ -49,7 +49,7 @@ def train(opt):
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-6)
     criterion = nn.MSELoss()
     game_state = FlappyBird()
-    image, reward, terminal = game_state.next_frame(0)
+    image, reward, terminal, score = game_state.next_frame(0)
     image = pre_processing(image[:game_state.screen_width, :int(game_state.base_y)], opt.image_size, opt.image_size)
     image = torch.from_numpy(image)
     if torch.cuda.is_available():
@@ -67,13 +67,12 @@ def train(opt):
         u = random()
         random_action = u <= epsilon
         if random_action:
-            print("Perform a random action")
+            #print("Perform a random action")
             action = randint(0, 1)
         else:
-
             action = torch.argmax(prediction).item()
 
-        next_image, reward, terminal = game_state.next_frame(action)
+        next_image, reward, terminal, score = game_state.next_frame(action)
         next_image = pre_processing(next_image[:game_state.screen_width, :int(game_state.base_y)], opt.image_size,
                                     opt.image_size)
         next_image = torch.from_numpy(next_image)
@@ -113,16 +112,18 @@ def train(opt):
 
         state = next_state
         iter += 1
-        print("Iteration: {}/{}, Action: {}, Loss: {}, Epsilon {}, Reward: {}, Q-value: {}".format(
-            iter + 1,
-            opt.num_iters,
-            action,
-            loss,
-            epsilon, reward, torch.max(prediction)))
+        if iter % 100 == 0:
+            print("Q-learning:Iteration: {}/{}, Action: {}, Loss: {}, Epsilon {}, Reward: {}, Q-value: {}".format(
+                iter + 1,
+                opt.num_iters,
+                action,
+                loss,
+                epsilon, reward, torch.max(prediction)))
         writer.add_scalar('Train/Loss', loss, iter)
         writer.add_scalar('Train/Epsilon', epsilon, iter)
         writer.add_scalar('Train/Reward', reward, iter)
         writer.add_scalar('Train/Q-value', torch.max(prediction), iter)
+        writer.add_scalar('Train/score', score, iter)
         if (iter+1) % 1000000 == 0:
             torch.save(model, "{}/flappy_bird_{}".format(opt.saved_path, iter+1))
     torch.save(model, "{}/flappy_bird".format(opt.saved_path))
@@ -130,4 +131,8 @@ def train(opt):
 
 if __name__ == "__main__":
     opt = get_args()
+    if not os.path.exists(opt.saved_path):
+        os.mkdir(opt.saved_path)
+    if not os.path.exists(opt.log_path):
+        os.mkdir(opt.log_path)
     train(opt)

@@ -39,4 +39,5 @@ class ReplayBuffer(object):
         for i in indices:
             replay.append(self._replay_memory[i])
         '''
+        #print(sorted(indices))
         return replay, indices

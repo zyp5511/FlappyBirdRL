@@ -2,6 +2,10 @@
 @author: Viet Nguyen <nhviet1009@gmail.com>
 """
 import torch.nn as nn
+import torch
+torch.manual_seed(0)
+torch.backends.cudnn.deterministic = True
+torch.cuda.manual_seed(123)
 
 class DeepQNetwork(nn.Module):
     def __init__(self):
