@@ -1,6 +1,11 @@
-tensorboard/
-trained_models/
 FlappyBird_original/inference_avg_click
 FlappyBird_original/trained_models_new
 FlappyBird_original/inference_result_final
 FlappyBird_original/inference_res
+FlappyBird_original/__pycache__
+FlappyBird_original/src/__pycache__
+FlappyBird_reward_shaping/trained_models
+FlappyBird_reward_shaping/trained_models_new
+FlappyBird_reward_shaping/tensorboard
+FlappyBird_reward_shaping/__pycache__
+FlappyBird_reward_shaping/src/__pycache__
