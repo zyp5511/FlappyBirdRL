@@ -1,5 +1,7 @@
 FlappyBird_original/inference_avg_click
 FlappyBird_original/trained_models_new
+FlappyBird_original/tensorboard/
+FlappyBird_original/trained_models/
 FlappyBird_original/inference_result_final
 FlappyBird_original/inference_res
 FlappyBird_original/__pycache__
